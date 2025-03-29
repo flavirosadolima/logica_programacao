@@ -1,24 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[8]:
+# ## Simulador de Jardinagem Interativo
+# <blockquote> Interface textual desenvolvida com objetivo de simular a experiência de cuidar de um jardim virtual. </blockquote>
 
-
-
-
-
-# In[8]:
-
-
-
-
-
-# In[67]:
+# In[ ]:
 
 
 import random
 import json
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta -> para extensão
 
 class PrecoMercado:
     """
@@ -102,61 +93,43 @@ class Planta:
             return int(self.rendimento_colheita * modificador_rendimento)
         return 0
 
+    """
+    Classe para as plantas e suas característica próprias; herdam atributos comuns de Planta.
+    """
 class Tomate(Planta):
-    """
-    Classe para a planta Tomate, herda de Planta.
-    """
     def __init__(self):
         super().__init__("Tomate", 7, 10)
-        self.tipo_tomate = random.choice(["Cereja", "Italiano", "Caqui"])
+        self.caracteristica = random.choice(["Cereja", "Italiano", "Caqui"])
 
 class Alface(Planta):
-    """
-    Classe para a planta Alface, herda de Planta.
-    """
     def __init__(self):
         super().__init__("Alface", 5, 5)
-        self.variedade_alface = random.choice(["Crespa", "Americana", "Roxa"])
+        self.caracteristica = random.choice(["Crespa", "Americana", "Roxa"])
 
 class Cenoura(Planta):
-    """
-    Classe para a planta Cenoura, herda de Planta.
-    """
     def __init__(self):
         super().__init__("Cenoura", 8, 8)
-        self.cor_cenoura = random.choice(["Laranja", "Roxa", "Branca"])
+        self.caracteristica = random.choice(["Laranja", "Roxa", "Branca"])
 
 class Batata(Planta):
-    """
-    Classe para a planta Batata, herda de Planta.
-    """
     def __init__(self):
         super().__init__("Batata", 10, 12)
-        self.tipo_batata = random.choice(["Inglesa", "Doce", "Roxa"])
+        self.caracteristica = random.choice(["Inglesa", "Doce", "Roxa"])
 
 class Morango(Planta):
-    """
-    Classe para a planta Morango, herda de Planta.
-    """
     def __init__(self):
         super().__init__("Morango", 6, 7)
-        self.variedade_morango = random.choice(["Camarosa", "Oso Grande", "Albion"])
+        self.caracteristica = random.choice(["Camarosa", "Oso Grande", "Albion"])
 
 class Pepino(Planta):
-    """
-    Classe para a planta Pepino, herda de Planta.
-    """
     def __init__(self):
         super().__init__("Pepino", 7, 9)
-        self.tipo_pepino = random.choice(["Japonês", "Caipira", "Aodai"])
+        self.caracteristica = random.choice(["Japonês", "Caipira", "Aodai"])
 
 class Abobora(Planta):
-    """
-    Classe para a planta Abóbora, herda de Planta.
-    """
     def __init__(self):
         super().__init__("Abóbora", 12, 15)
-        self.tipo_abobora = random.choice(["Moranga", "Butternut", "Jacarezinho"])
+        self.caracteristica = random.choice(["Moranga", "Butternut", "Jacarezinho"])
 
 class EventoNatural:
     """
@@ -224,7 +197,7 @@ class EventoNatural:
             return f"Você lidou com o evento {self.nome} corretamente! A saúde da planta não foi afetada."
         else:
             planta.saude = max(0, planta.saude - self.impacto_saude)
-            return f"Você não lidou corretamente com o evento. A saúde da planta {planta.nome} diminuiu em {self.impacto_saude} pontos."
+            return f"Você não lidou corretamente com o evento. A saúde da planta {planta.nome} {planta.caracteristica} diminuiu em {self.impacto_saude} pontos."
 
 class SistemaEventosNaturais:
     """
@@ -353,8 +326,13 @@ class Jardineiro:
     Gerencia as ações do jardineiro, como plantar, cuidar e colher.
     """
     tipos_plantas = {
-        "tomate": Tomate, "alface": Alface, "cenoura": Cenoura,
-        "batata": Batata, "morango": Morango, "pepino": Pepino, "abobora": Abobora
+        "tomate": Tomate,
+        "alface": Alface,
+        "cenoura": Cenoura,
+        "batata": Batata, 
+        "morango": Morango,
+        "pepino": Pepino,
+        "abobora": Abobora
     }
 
     plant_id_counter = 1  # Initialize the plant ID counter
@@ -385,12 +363,12 @@ class Jardineiro:
         """
         if tipo_planta in self.inventario.sementes and self.inventario.sementes[tipo_planta] > 0:
             nova_planta = self.tipos_plantas[tipo_planta]()
-            plant_id = Jardineiro.plant_id_counter  # Get the next plant ID
-            Jardineiro.plant_id_counter += 1  # Increment the counter
+            plant_id = Jardineiro.plant_id_counter  # pega o ID atual/da última planta
+            Jardineiro.plant_id_counter += 1  # Incrementa contador para planta
             self.plantas_plantadas[plant_id] = nova_planta
             self.inventario.remover(tipo_planta, 1, eh_semente=True)
             self.ganhar_experiencia(10)
-            return f"{self.nome} plantou um(a) {nova_planta.nome} (ID: {plant_id})! Você ganhou 10 pontos de experiência."
+            return f"{self.nome} plantou um(a) {nova_planta.nome} {nova_planta.caracteristica} (ID: {plant_id})! Você ganhou 10 pontos de experiência."
         else:
             return f"{self.nome} não tem sementes de {tipo_planta} para plantar!"
     
@@ -411,7 +389,7 @@ class Jardineiro:
         mensagens = []
 
         if planta.colhida:
-            return f"{planta.nome} (ID: {id_planta}) já foi colhido(a) e está pronto(a) para venda."
+            return f"{planta.nome} {planta.caracteristica} (ID: {id_planta}) já foi colhido(a) e está pronto(a) para venda."
 
         planta.crescer()
 
@@ -440,10 +418,10 @@ class Jardineiro:
             mensagens.append(f"{planta.nome} (ID: {id_planta}) morreu e foi removido(a) do jardim.")
             del self.plantas_plantadas[id_planta]
         elif planta.esta_madura() and not planta.colhida:
-            mensagens.append(f"{planta.nome} (ID: {id_planta}) está pronto(a) para ser colhido(a)!")
+            mensagens.append(f"{planta.nome} {planta.caracteristica} (ID: {id_planta}) está pronto(a) para ser colhido(a)!")
         
-        mensagens.append(f"Saúde atual de {planta.nome} (ID: {id_planta}): {planta.saude}%")
-        mensagens.append(f"Percentual de crescimento de {planta.nome} (ID: {id_planta}): {planta.porcentagem_crescimento:.2f}%")
+        mensagens.append(f"Saúde atual de {planta.nome} {planta.caracteristica} (ID: {id_planta}): {planta.saude}%")
+        mensagens.append(f"Percentual de crescimento de {planta.nome} {planta.caracteristica} (ID: {id_planta}): {planta.porcentagem_crescimento:.2f}%")
         return "\n".join(mensagens)
     
     def colher(self, id_planta):
@@ -464,11 +442,11 @@ class Jardineiro:
             quantidade_colhida = planta.colher()
             self.inventario.adicionar(planta.nome, quantidade_colhida)
             self.ganhar_experiencia(10)
-            return f"Você colheu {quantidade_colhida} {planta.nome}(s) (ID: {id_planta})! Você ganhou 10 pontos de experiência."
+            return f"Você colheu {quantidade_colhida} {planta.nome}(s) {planta.caracteristica}(s) (ID: {id_planta})! Você ganhou 10 pontos de experiência."
         elif planta.colhida:
-            return f"{planta.nome} (ID: {id_planta}) já foi colhido(a) e está pronto(a) para venda."
+            return f"{planta.nome} {planta.caracteristica} (ID: {id_planta}) já foi colhido(a) e está pronto(a) para venda."
         else:
-            return f"{planta.nome} (ID: {id_planta}) ainda não está pronto(a) para ser colhido(a)."
+            return f"{planta.nome} {planta.caracteristica} (ID: {id_planta}) ainda não está pronto(a) para ser colhido(a)."
     
     def vender_planta(self, id_planta):
         """
@@ -485,7 +463,7 @@ class Jardineiro:
         
         planta = self.plantas_plantadas[id_planta]
         if not planta.colhida:
-            return f"{planta.nome} (ID: {id_planta}) ainda não foi colhido(a). Colha a planta antes de vender."
+            return f"{planta.nome} {planta.caracteristica} (ID: {id_planta}) ainda não foi colhido(a). Colha a planta antes de vender."
         
         if planta.saude < 80:
             perda_experiencia = 50
@@ -493,7 +471,7 @@ class Jardineiro:
             self.experiencia = max(0, self.experiencia - perda_experiencia)
             self.inventario.dinheiro = max(0, self.inventario.dinheiro - perda_dinheiro)
             del self.plantas_plantadas[id_planta]
-            return f"{planta.nome} (ID: {id_planta}) foi descartado(a) e a safra perdida. Você perdeu {perda_experiencia} pontos de experiência e R$ {perda_dinheiro:.2f}. Você deve estudar mais para melhorar suas habilidades de jardinagem."
+            return f"{planta.nome} {planta.caracteristica} (ID: {id_planta}) foi descartado(a) e a safra perdida. Você perdeu {perda_experiencia} pontos de experiência e R$ {perda_dinheiro:.2f}.\nVocê deve estudar mais para melhorar suas habilidades de jardinagem."
         
         preco = PrecoMercado.obter_preco_mercado(planta.nome)
         quantidade_colhida = planta.rendimento_colheita
@@ -501,7 +479,7 @@ class Jardineiro:
         self.inventario.adicionar("dinheiro", preco_total)
         del self.plantas_plantadas[id_planta]
         self.ganhar_experiencia(40)
-        return f"Vendido {quantidade_colhida} {planta.nome}(s) (ID: {id_planta}) por R${preco_total:.2f} (R${preco:.2f} cada)! Você ganhou 40 pontos de experiência."
+        return f"Vendido {quantidade_colhida} {planta.nome}(s) {planta.caracteristica} (ID: {id_planta}) por R${preco_total:.2f} (R${preco:.2f} cada)! Você ganhou 40 pontos de experiência."
     
     def procurar_sementes(self):
         """
@@ -564,7 +542,7 @@ class Jardineiro:
             indicador_saude = "🌿" if planta.saude > 50 else "🍂"
             emoji_planta = "🧺" if planta.colhida else "🌱"
             status_colheita = "Colhido" if planta.colhida else ("Pronto para colheita" if planta.esta_madura() else "Em crescimento")
-            exibicao_jardim += f"\n{emoji_planta} {planta.nome} (ID: {id_planta}) {indicador_saude} [{'#' * int(planta.porcentagem_crescimento / 10):<10}] {planta.porcentagem_crescimento:.0f}% | Saúde: {planta.saude}% | {status_colheita}"
+            exibicao_jardim += f"\n{emoji_planta} {planta.nome} {planta.caracteristica} (ID: {id_planta}) {indicador_saude} [{'#' * int(planta.porcentagem_crescimento / 10):<10}] {planta.porcentagem_crescimento:.0f}% | Saúde: {planta.saude}% | {status_colheita}"
         return exibicao_jardim
 
 def salvar_jogo(jardineiro):
@@ -640,7 +618,7 @@ def main():
     Função principal do jogo.
     """
     print("Bem-vindo ao Jogo de Jardinagem!")
-    
+
     load_choice = input("Deseja carregar um jogo salvo? (s/n): ").lower()
     if load_choice == 's':
         jardineiro, message = carregar_jogo()
@@ -651,9 +629,11 @@ def main():
     else:
         jardineiro_nome = input("Qual é o seu nome, jardineiro? ")
         jardineiro = Jardineiro(jardineiro_nome)
-
+    
     print(f"Olá, {jardineiro.nome}! Vamos começar a jardinar!")
 
+    sementes_inventario = jardineiro.inventario.sementes
+    
     while True:
         print("\nO que você gostaria de fazer?")
         print("1. Plantar")
@@ -669,7 +649,7 @@ def main():
         try:
             choice = int(input("Escolha uma opção (1-9): "))
             if choice == 1:
-                plant_type = input("Que tipo de planta você quer plantar? (tomate/alface/cenoura/batata/morango/pepino/abobora): ").lower()
+                plant_type = input(f"Que tipo de planta você quer plantar: {sementes_inventario}? " ).lower()
                 if plant_type in Jardineiro.tipos_plantas:
                     message = jardineiro.plantar(plant_type)
                     print(message)
